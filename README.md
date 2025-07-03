@@ -1,49 +1,56 @@
-# Backend API Testing - User Signup
+# Real Estate App
 
-## Overview
-Implement a POST `/signup` route that allows users to create their profiles by submitting their details. The route should accept user data, process the registration, and return a confirmation message along with the created user object.
+A full-stack real estate application with a Next.js frontend and a Node.js/Express/Sequelize backend. Includes user authentication, PostgreSQL database, and robust validation and testing.
 
-## Endpoint
-`POST /signup`
+## Features
 
-## Route Handler
-`backend/src/controllers/AuthController.ts`
+- User registration and login (with validation)
+- PostgreSQL database (via Docker)
+- Sequelize ORM
+- Next.js frontend
+- Jest & Supertest for backend testing
 
-## Request Body
-The request should include a JSON object with the following properties:
+## Getting Started
 
-```json
-{
-  "name": "string",
-  "email": "string",
-  "password": "string",
-  "termsAccepted": true
-}
-name: User's full name
-email: User's email address
-password: User's password
-termsAccepted: Boolean indicating if the user accepted the terms and conditions
-Response
-On successful registration, the API should return a JSON object:
+### 1. Install dependencies
 
-CopyRun
-{
-  "message": "User registered successfully",
-  "user": {
-    "id": "string",
-    "name": "string",
-    "email": "string",
-    "createdAt": "ISO 8601 date string"
-  }
-}
-Note: The user object should follow the User data type, which includes at least the properties shown above (excluding password for security).
+```bash
+npm install
+```
 
-Implementation Details
-Use the provided AuthController.ts to define the route handler.
-Ensure proper validation of input data.
-Handle duplicate email registration gracefully.
-Hash the password before saving the user data.
-Return appropriate HTTP status codes (e.g., 201 for success, 400 for bad request).
-Additional Notes
-You may use any ORM or database solution of your choice.
-Focus on clean, maintainable, and secure code.
+### 2. Start PostgreSQL with Docker
+
+```bash
+npm run db:start
+```
+
+### 3. Run the development server
+
+```bash
+npm run dev
+```
+
+- Backend runs on your configured port (see backend/src/server.ts)
+- Frontend runs on http://localhost:3000
+
+## Running Tests
+
+### Run all tests
+
+```bash
+npm test
+```
+
+### Watch mode
+
+```bash
+npm run test:watch
+```
+
+### Coverage report
+
+```bash
+npm run test:coverage
+```
+
+---

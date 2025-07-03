@@ -27,10 +27,9 @@ export class User extends Model {
   })
   termsAccepted!: boolean;
 
-  
   @Column({
     type: DataType.STRING,
-    allowNull: true, 
+    allowNull: true,
   })
   firstName?: string;
 
