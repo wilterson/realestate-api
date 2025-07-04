@@ -13,16 +13,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       abortEarly: false,
     });
 
-    const {
-      name,
-      email,
-      password,
-      termsAccepted,
-      firstName,
-      lastName,
-      phoneNumber,
-      about,
-    } = validatedData;
+    const { name, email, password, termsAccepted, phoneNumber, about } =
+      validatedData;
+
+    // Split name into firstName and lastName
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0];
+    const lastName = nameParts.slice(1).join(" ");
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -52,10 +49,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         id: user.id,
         name: user.name,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        about: user.about,
+        createdAt: user.createdAt,
       },
     });
   } catch (error: any) {

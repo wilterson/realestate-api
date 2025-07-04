@@ -7,8 +7,6 @@ describe("AuthValidations", () => {
       email: "john@example.com",
       password: "Password123",
       termsAccepted: true,
-      firstName: "John",
-      lastName: "Doe",
       phoneNumber: "+1234567890",
       about: "A test user",
     };
@@ -74,20 +72,18 @@ describe("AuthValidations", () => {
       );
     });
 
-    it("should validate firstName length when provided", async () => {
-      const invalidData = { ...validSignupData, firstName: "A" }; // Too short
+    it("should validate name format (must contain at least first and last name)", async () => {
+      const invalidData = { ...validSignupData, name: "John" }; // Only one word
 
       await expect(signupSchema.validate(invalidData)).rejects.toThrow(
-        "First name must be at least 2 characters"
+        "Name must contain at least first and last name"
       );
     });
 
-    it("should validate lastName length when provided", async () => {
-      const invalidData = { ...validSignupData, lastName: "A" }; // Too short
-
-      await expect(signupSchema.validate(invalidData)).rejects.toThrow(
-        "Last name must be at least 2 characters"
-      );
+    it("should validate name format with multiple words", async () => {
+      const validData = { ...validSignupData, name: "John Michael Doe" };
+      const result = await signupSchema.validate(validData);
+      expect(result.name).toBe("John Michael Doe");
     });
 
     it("should validate phone number format when provided", async () => {
@@ -147,11 +143,14 @@ describe("AuthValidations", () => {
         fail("Should have thrown validation error");
       } catch (error: any) {
         expect(error.name).toBe("ValidationError");
-        expect(error.inner).toHaveLength(6);
+        expect(error.inner).toHaveLength(7);
 
         const errorMessages = error.inner.map((err: any) => err.message);
         expect(errorMessages).toContain("Name must be at least 2 characters");
         expect(errorMessages).toContain("Name is required");
+        expect(errorMessages).toContain(
+          "Name must contain at least first and last name"
+        );
         expect(errorMessages).toContain("Invalid email format");
         expect(errorMessages).toContain(
           "Password must be at least 8 characters"

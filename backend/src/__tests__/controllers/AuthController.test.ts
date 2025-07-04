@@ -42,8 +42,6 @@ describe("AuthController", () => {
       email: "john@example.com",
       password: "Password123",
       termsAccepted: true,
-      firstName: "John",
-      lastName: "Doe",
       phoneNumber: "+1234567890",
       about: "A test user",
     };
@@ -59,6 +57,8 @@ describe("AuthController", () => {
       const createdUser = {
         id: 1,
         ...validSignupData,
+        firstName: "John",
+        lastName: "Doe",
         password: "hashedPassword",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -110,6 +110,106 @@ describe("AuthController", () => {
       );
     });
 
+    it("should correctly split name with multiple words", async () => {
+      // Mock User.findOne to return null (user doesn't exist)
+      (mockUser.findOne as any).mockResolvedValue(null);
+
+      // Mock bcrypt.hash
+      (mockBcrypt.hash as any).mockResolvedValue("hashedPassword");
+
+      // Mock User.create
+      const createdUser = {
+        id: 1,
+        name: "John Michael Doe",
+        email: "john@example.com",
+        firstName: "John",
+        lastName: "Michael Doe",
+        password: "hashedPassword",
+        termsAccepted: true,
+        phoneNumber: "+1234567890",
+        about: "A test user",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (mockUser.create as any).mockResolvedValue(createdUser);
+
+      // Mock jwt.sign
+      (mockJwt.sign as any).mockReturnValue("mockToken");
+
+      const response = await request(app)
+        .post("/signup")
+        .send({
+          name: "John Michael Doe",
+          email: "john@example.com",
+          password: "Password123",
+          termsAccepted: true,
+          phoneNumber: "+1234567890",
+          about: "A test user",
+        })
+        .expect(201);
+
+      expect(mockUser.create).toHaveBeenCalledWith({
+        name: "John Michael Doe",
+        email: "john@example.com",
+        password: "hashedPassword",
+        termsAccepted: true,
+        firstName: "John",
+        lastName: "Michael Doe",
+        phoneNumber: "+1234567890",
+        about: "A test user",
+      });
+    });
+
+    it("should handle names with extra whitespace", async () => {
+      // Mock User.findOne to return null (user doesn't exist)
+      (mockUser.findOne as any).mockResolvedValue(null);
+
+      // Mock bcrypt.hash
+      (mockBcrypt.hash as any).mockResolvedValue("hashedPassword");
+
+      // Mock User.create
+      const createdUser = {
+        id: 1,
+        name: "  John   Doe  ",
+        email: "john@example.com",
+        firstName: "John",
+        lastName: "Doe",
+        password: "hashedPassword",
+        termsAccepted: true,
+        phoneNumber: "+1234567890",
+        about: "A test user",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (mockUser.create as any).mockResolvedValue(createdUser);
+
+      // Mock jwt.sign
+      (mockJwt.sign as any).mockReturnValue("mockToken");
+
+      const response = await request(app)
+        .post("/signup")
+        .send({
+          name: "  John   Doe  ",
+          email: "john@example.com",
+          password: "Password123",
+          termsAccepted: true,
+          phoneNumber: "+1234567890",
+          about: "A test user",
+        })
+        .expect(201);
+
+      expect(mockUser.create).toHaveBeenCalledWith({
+        name: "  John   Doe  ",
+        email: "john@example.com",
+        password: "hashedPassword",
+        termsAccepted: true,
+        firstName: "John",
+        lastName: "Doe",
+        phoneNumber: "+1234567890",
+        about: "A test user",
+      });
+    });
+
     it("should return 400 if user already exists", async () => {
       // Mock User.findOne to return existing user
       const existingUser = { id: 1, email: "john@example.com" };
@@ -136,6 +236,24 @@ describe("AuthController", () => {
         email: "invalid-email", // Invalid: not a valid email
         password: "123", // Invalid: too short
         termsAccepted: false, // Invalid: must be true
+      };
+
+      const response = await request(app)
+        .post("/signup")
+        .send(invalidData)
+        .expect(400);
+
+      expect(response.body.error).toBe("Validation failed");
+      expect(response.body.details).toBeDefined();
+      expect(Array.isArray(response.body.details)).toBe(true);
+    });
+
+    it("should return 400 for invalid name format (single word)", async () => {
+      const invalidData = {
+        name: "John", // Invalid: only one word
+        email: "john@example.com",
+        password: "Password123",
+        termsAccepted: true,
       };
 
       const response = await request(app)

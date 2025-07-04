@@ -5,7 +5,18 @@ export const signupSchema = yup.object({
     .string()
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name must be less than 100 characters")
-    .required("Name is required"),
+    .required("Name is required")
+    .test(
+      "name-format",
+      "Name must contain at least first and last name",
+      function (value) {
+        if (!value) return false;
+        const nameParts = value.trim().split(/\s+/);
+        return (
+          nameParts.length >= 2 && nameParts.every((part) => part.length >= 2)
+        );
+      }
+    ),
   email: yup
     .string()
     .email("Invalid email format")
@@ -22,16 +33,6 @@ export const signupSchema = yup.object({
     .boolean()
     .oneOf([true], "You must accept the terms and conditions")
     .required("Terms acceptance is required"),
-  firstName: yup
-    .string()
-    .min(2, "First name must be at least 2 characters")
-    .max(50, "First name must be less than 50 characters")
-    .optional(),
-  lastName: yup
-    .string()
-    .min(2, "Last name must be at least 2 characters")
-    .max(50, "Last name must be less than 50 characters")
-    .optional(),
   phoneNumber: yup
     .string()
     .matches(/^\+?[\d\s\-\(\)]+$/, "Invalid phone number format")
