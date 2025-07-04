@@ -15,19 +15,19 @@ A full-stack real estate application with a Next.js frontend and a Node.js/Expre
 ### 1. Install dependencies
 
 ```bash
-npm install
+yarn install
 ```
 
 ### 2. Start PostgreSQL with Docker
 
 ```bash
-npm run db:start
+docker compose up -d
 ```
 
 ### 3. Run the development server
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 - Backend runs on your configured port (see backend/src/server.ts)
@@ -38,19 +38,19 @@ npm run dev
 ### Run all tests
 
 ```bash
-npm test
+yarn test
 ```
 
 ### Watch mode
 
 ```bash
-npm run test:watch
+yarn test:watch
 ```
 
 ### Coverage report
 
 ```bash
-npm run test:coverage
+yarn test:coverage
 ```
 
 ---
